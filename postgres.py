@@ -1,5 +1,6 @@
 import csv
 import psycopg2
+import selenium
 import urllib3
 from bs4 import BeautifulSoup
 from utils import get_formatted_date
@@ -59,7 +60,7 @@ def update_stock_tables_from_csv():
     for filename in FILENAMES:
         update_stock_from_csv(filename)
 
-def update_spy():
+def update_beautiful_spy():
     """
     <tr class="historical-data__row">
     <th scope="row" class="historical-data__cell">10/06/2022</th>
@@ -70,9 +71,12 @@ def update_spy():
     <td scope="row" class="historical-data__cell">372.68</td></tr>
     :return:
     """
-    url = 'https://www.nasdaq.com/market-activity/funds-and-etfs/spy/historical'
+    # url = 'https://www.nasdaq.com/market-activity/funds-and-etfs/spy/historical'
+    url = 'https://www.nasdaq.com/market-activity/funds-and-etfs/'
     http = urllib3.PoolManager()
+    print(f'SENDING REQUEST')
     resp = http.request('GET', url)
+    # page = resp.data
     print(resp.status)
     # with open(page) as fp:
     #     soup = BeautifulSoup(fp, 'html.parser')
@@ -80,8 +84,25 @@ def update_spy():
     # tag = soup.b
     # print(tag['historical-data__row'])
 
+def update_selenium_spy():
+    from selenium.webdriver.chrome.service import Service
+    from selenium import webdriver
+    from selenium.webdriver.common.by import By
+
+    url = 'https://www.nasdaq.com/market-activity/funds-and-etfs/spy/historical'
+
+    service = Service(executable_path="/opt/homebrew/bin/chromedriver")
+    driver = webdriver.Chrome(service=service)
+    # driver = webdriver.Firefox(executable_path="/path/to/geckodrive.exe")
+    driver.get(url)
+
+    rows = driver.find_elements(By.XPATH, "//tr[@class='historical-data__row']") 
+    return rows
+
+
 # update_spy_from_csv()
-# update_spy()
+update_selenium_spy()
 # update_stock_tables_from_csv()
-update_stock_from_csv('DASH')
+# update_stock_from_csv('DASH')
+# update_stock_from_csv('IWM')
 
