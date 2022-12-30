@@ -1,5 +1,10 @@
+import json
 from re import sub
 from decimal import Decimal
+
+from selenium.webdriver.chrome.service import Service
+from selenium import webdriver
+from selenium.webdriver.common.by import By
 
 def get_formatted_date(unformatted_date):
     """
@@ -42,3 +47,18 @@ def get_date_strikeprice_from_option(date_str):
 
 def convert_currency_to_float(money):
     return Decimal(sub(r'[^\d.]', '', money))
+
+def scrape_for_stock_data(url, tag_string):
+    """
+    Get data from website via selenium
+    :param url: url of site to be scraped
+    :param tag_string: string with desired tag info ex. "//tr[@class='historical-data__row']"
+    :return:
+    """
+    service = Service(executable_path="/opt/homebrew/bin/chromedriver")
+    driver = webdriver.Chrome(service=service)
+    # driver = webdriver.Firefox(executable_path="/path/to/geckodrive.exe")
+    driver.get(url)
+
+    rows = driver.find_elements(By.XPATH, tag_string)
+    return rows
