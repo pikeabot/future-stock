@@ -1,7 +1,7 @@
 import json
 import psycopg2
 
-from flask import Flask
+from flask import Flask, request
 from selenium.webdriver.chrome.service import Service
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -32,8 +32,9 @@ def get_stock_data_for_ticker(ticker):
 def get_fed_schedule():
     pass
 
-@app.route("/stock_data/<ticker>/update")
-def update_ticker_postgres(ticker):
+@app.post("/stock_data/update")
+def update_ticker_postgres():
+    ticker = request.form['ticker']
     table_sql = f'CREATE TABLE IF NOT EXISTS public.{ticker.lower()} ' \
                 f'(date date NOT NULL, close money NOT NULL, volume integer NOT NULL, ' \
                 f'open money NOT NULL, high money NOT NULL, low money NOT NULL, ' \
